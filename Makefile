@@ -1,5 +1,7 @@
 #CROSS_COMPILE?=arm-arago-linux-gnueabi-
 
+#include libprussdrv/Makefile
+
 LIBDIR?=lib
 INCDIR?=include
 BINDIR?=bin
@@ -13,12 +15,18 @@ OBJDIR=obj
 TARGET=$(BINDIR)/dmx
 P_TARGET=$(BINDIR)/dmx.bin
 
+_DEPS = libprussdrv.a libprussdrvd.a
+DEPS = $(patsubst %,$(LIBDIR)/%,$(_DEPS))
+
 _OBJ = dmx.o
 OBJ = $(patsubst %,$(OBJDIR)/%,$(_OBJ))
 
 all: $(TARGET) $(P_TARGET)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
+$(LIBDIR)/%.a:
+	make --directory=libprussdrv
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(DEPS)
 	@mkdir -p $(OBJDIR)
 	$(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@ $< 
 
@@ -34,4 +42,4 @@ $(BINDIR)/%.bin: $(SRCDIR)/%.p
 .PHONY: clean
 
 clean:
-	rm -rf $(OBJDIR) $(BINDIR)
+	rm -rf $(OBJDIR) $(BINDIR) $(LIBDIR)
