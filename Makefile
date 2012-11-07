@@ -21,6 +21,7 @@ $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CROSS_COMPILE)gcc $(CFLAGS) -c -o $@ $< 
 
 $(TARGET): $(OBJ)
+	@mkdir -p $(BINDIR)
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 .PHONY: clean
