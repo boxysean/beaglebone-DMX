@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 #include <dirent.h>
-#include <signal.h>
 
 // Driver header file
 #include <prussdrv.h>
@@ -58,8 +57,6 @@ static void LOCAL_unexport_pin (int);
 static void LOCAL_udp_listen ();
 static void diep (char*);
 
-static void sighandler(int);
-
 /*****************************************************************************
 * Local Variable Definitions                                                 *
 *****************************************************************************/
@@ -76,8 +73,6 @@ static void sighandler(int);
 
 static void *pruDataMem;
 static unsigned char *pruDataMem_byte;
-
-static int udp_forever = 1;
 
 /*****************************************************************************
 * Global Function Definitions                                                *
@@ -113,38 +108,6 @@ int main (void)
     printf("\tINFO: Executing example.\r\n");
     prussdrv_exec_program (PRU_NUM, "./dmx.bin");
     LOCAL_udp_listen();
- 
-    // Instead of waiting patiently for the PRU to finish, we're going to screw around with the shared memory and hopefully influence the PRU
-    
-/*    for (k = 0; k < 10; k++) {
-      for (j = 0; j < 5; j++) {
-	for (i = 0; i < 3; i++) {
-          pruDataMem_byte[0] = 64;
-          usleep(10000);
-          pruDataMem_byte[0] = 0;
-          usleep(10000);
-	}
-	for (i = 0; i < 3; i++) {
-          pruDataMem_byte[1] = 64;
-          usleep(10000);
-          pruDataMem_byte[1] = 0;
-          usleep(10000);
-	}
-      }
-      for (j = 0; j < 5; j++) {
-        for (i = 0; i < 64; i++) {
-          pruDataMem_byte[0] = i;
-          pruDataMem_byte[1] = 64-i;
-          usleep(10000);
-        }
-        for (i = 0; i < 64; i++) {
-          pruDataMem_byte[0] = 64-i;
-          pruDataMem_byte[1] = i;
-          usleep(10000);
-        }
-      }
-    }
-*/
  
     pruDataMem_byte[DMX_HALT_ADDR] = 1;
     
@@ -237,32 +200,29 @@ static void LOCAL_udp_listen () {
 		buf[i] = 0;
 	}
 
-//	signal(SIGABRT, &sighandler);
-//	signal(SIGTERM, &sighandler);
-//	signal(SIGINT, &sighandler);
-
-	while (udp_forever) {
+	while (1) {
 		packet_length = recvfrom(s, buf, UDP_BUFLEN, 0, &si_other, &slen);
 		if (packet_length == -1) {
 			diep("recvfrom()");
 		}
     sscanf(buf, "%3d ", &channels);
-    pruDataMem_byte[DMX_CHANNELS_ADDR] = channels+1; // does this get updated too often?
+
+    // server exit condition
+    if (channels < 0) {
+      break;
+    }
+
+    pruDataMem_byte[DMX_CHANNELS_ADDR] = channels+1;
     channel = 0;
 		buf[packet_length] = 0;
 		for (i=4; i<packet_length; i+=4) {
-//			printf("\tReceived packet (size %d) from %s:%d\nData: %s\n\n", packet_length, inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port), buf);
 			sscanf(buf+i, "%3d ", &value);
-//			printf("%3d %3d ", channel, value);
+			printf("%3d ", value);
 			pruDataMem_byte[channel++] = value;
 		}
-//		printf("\n");
+		printf("\n");
  	}
 
 	close(s);
 }
 
-static void sighandler(int sig) {
-	printf("\tCaught signal! %d\n", sig);
-	udp_forever = 0;
-}
