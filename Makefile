@@ -26,10 +26,9 @@ $(TARGET): $(OBJ)
 	@mkdir -p $(BINDIR)
 	$(CROSS_COMPILE)gcc $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(BINDIR): $(SRCDIR)/%.p
+$(BINDIR)/%.bin: $(SRCDIR)/%.p
 	@mkdir -p $(BINDIR)
-	${PASM} -b $@
-	@mv dmx.bin $(BINDIR)
+	${PASM} -b $< $(basename $@)
 
 .PHONY: clean
 
