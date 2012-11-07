@@ -1,2 +1,8 @@
 bin
 obj
+lib
+
+libprussdrv/debug/
+libprussdrv/release/
+
+pasm/pasm
