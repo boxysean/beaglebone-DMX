@@ -16,15 +16,15 @@ PORT = 9930
 # number of DMX channels
 CHANNELS = 4
 
-# how many seconds to wait between sending a DMX update
+# how many seconds to wait between sending an update to the server
 DELAY = 0.5
 
 def constructPayload(ch):
-  res = "%3d " % (CHANNELS)
+  res = "%d " % (CHANNELS)
 
   for i in range(CHANNELS):
     x = 255 if i == ch else 0
-    res += "%3d " % (x)
+    res += "%d " % (x)
 
   return res
 
@@ -35,7 +35,8 @@ def loop():
   channel = 0
   while True:
     payload = constructPayload(channel)
-    print "payload %s" % (payload)
+#    print "payload %s" % (payload)
+    print channel
     sock.send(payload)
     channel = (channel + 1) % CHANNELS
     time.sleep(DELAY)
