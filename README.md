@@ -28,7 +28,7 @@ How to run: Software
 
 1. Run `modprobe uio_pruss`
 2. Launch DMX server: `cd` into `bin` and run `./dmx`
-3. Laucnh DMX client: run a DMX client script, e.g., `cd contollers; python cycle.py`
+3. Launch DMX client: run a DMX client script, e.g., `cd contollers; python cycle.py`
 
 How to run: Hardware
 --------------------
@@ -45,29 +45,29 @@ The DMX server expects UDP string packets in the following format:
 
     N <value1> <value2> ... <valueN>
 
-`N` refers to the number of channels, and `valueI` is an integer between 0-255. A single space is expected between the values, and there should be no space after the last value.
+`N` refers to the number of channels, and `valueI` is the value of the Ith channel, an integer between 0-255. A single space is expected between the values, and there should be no space after the last value.
 
 Send these packets to port 9930 on the BeagleBone. You can change the port by editing the variable in `src/dmx.c` and recompiling.
 
 Production Mode
 ---------------
 
-It's possible to make the DMX server launch on the BeagleBone on startup.
+It's possible to make the DMX client and/or server launch when the BeagleBone boots up. [Follow these instructions.](http://beaglebone.cameon.net/home/autostarting-services)
 
 Benchmark
 ---------
 
-On a BeagleBone rev A6 running both the DMX server and a python benchmark client constantly sending updates on all 512 channels:
+BeagleBone rev A6 running both the DMX server and a DMX client written in python. The client constantly sends updates on all 512 channels, 1000 times.
 
-   root@beaglebone:~/workspace/beaglebone-DMX/controllers# time python performance.py 1000
-   
-   real    0m11.088s
-   user    0m8.610s
-   sys     0m0.120s
+    root@beaglebone:~/workspace/beaglebone-DMX/controllers# time python performance.py 1000
+    
+    real    0m11.088s
+    user    0m8.610s
+    sys     0m0.120s
 
-1000 frames updating all 512 channels took 11.088s, which is about 90 FPS.
+1000 frames updating all 512 channels takes 11.088s, which is about 90 FPS. No packet drops by the server.
 
 How it works
 ------------
 
-This library takes advantage of the BeagleBone's PRU (Programmable Realtime Unit). The DMX server passes the DMX values to the BeagleBone's PRU, which is constantly bit-banging the DMX protocol in realtime. [Read more.](http://blog.boxysean.com/2012/08/12/first-steps-with-the-beaglebone-pru/)
+This library takes advantage of the BeagleBone's PRU (Programmable Realtime Unit). The DMX server passes the DMX values to the BeagleBone's PRU, which is constantly bit-banging the DMX protocol in realtime. ([Read more.](http://blog.boxysean.com/2012/08/12/first-steps-with-the-beaglebone-pru/)) The hardware circuit converts the bit-banged protocol into [RS-485](http://en.wikipedia.org/wiki/RS-485), which is what all standard DMX units expect.
