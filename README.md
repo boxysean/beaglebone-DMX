@@ -1,4 +1,4 @@
-+++ Output DMX from your BeagleBone
+=== Output DMX from your BeagleBone
 
 DMX is a standard in the lighting industry and is used in applications from architecture to art installations to stage production.
 
