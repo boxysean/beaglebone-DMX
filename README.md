@@ -35,6 +35,9 @@ How to run: Hardware
 
 1. [Make this circuit.](http://code.google.com/p/tinkerit/wiki/DmxSimpleBuilding)
 2. Connect pin 3 of the BeagleBone's P8 header to the input (pin 4) of the IC.
+3. Connect pins 5, 6, and 7 to ground, signal, and signal inversion respectively to target unit.
+
+![image of DMX circuit](http://www.arduino.cc/playground/uploads/DMX/send_sn75276a.jpg)
 
 You can change the Bone's pin by editing the defined pin in `src/dmx.c` and recompiling.
 
@@ -57,7 +60,7 @@ It's possible to make the DMX client and/or server launch when the BeagleBone bo
 Benchmark
 ---------
 
-BeagleBone rev A6 running both the DMX server and a DMX client written in python. The client constantly sends updates on all 512 channels, 1000 times.
+BeagleBone rev A6 running both the DMX server and a DMX client written in python. The client sends 1000 updates messages back-to-back, changing all 512 channels.
 
     root@beaglebone:~/workspace/beaglebone-DMX/controllers# time python performance.py 1000
     
