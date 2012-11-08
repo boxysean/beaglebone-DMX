@@ -80,7 +80,7 @@ static unsigned char *pruDataMem_byte;
 
 int main (void)
 {
-    unsigned int ret, i, j, k;
+    unsigned int ret;
     tpruss_intc_initdata pruss_intc_initdata = PRUSS_INTC_INITDATA;
     
     printf("\nINFO: Starting %s example.\r\n", "dmx");
@@ -181,7 +181,7 @@ static void LOCAL_unexport_pin (int pin) {
 // From http://www.abc.se/~m6695/udp.html
 static void LOCAL_udp_listen () {
 	struct sockaddr_in si_me, si_other;
-	int s, i, slen=sizeof(si_other);
+	int s, i, idx, slen=sizeof(si_other);
 	char buf[UDP_BUFLEN];
 	int channel, channels, value;
 	int packet_length;
@@ -205,7 +205,7 @@ static void LOCAL_udp_listen () {
 		if (packet_length == -1) {
 			diep("recvfrom()");
 		}
-    sscanf(buf, "%3d ", &channels);
+    sscanf(buf, "%d", &channels);
 
     // server exit condition
     if (channels < 0) {
@@ -215,10 +215,17 @@ static void LOCAL_udp_listen () {
     pruDataMem_byte[DMX_CHANNELS_ADDR] = channels+1;
     channel = 0;
 		buf[packet_length] = 0;
-		for (i=4; i<packet_length; i+=4) {
-			sscanf(buf+i, "%3d ", &value);
-			printf("%3d ", value);
+    idx = 0;
+    // skip past the channel definition
+    while (++idx < packet_length && buf[idx] != ' ');
+
+    while (idx < packet_length) {
+			sscanf(buf+idx, " %d", &value);
+      // printf("%3d ", value);
+      if (value > 0) printf("%d ", channel);
 			pruDataMem_byte[channel++] = value;
+      // skip past this integer in the packet
+      while (++idx < packet_length && buf[idx] != ' ');
 		}
 		printf("\n");
  	}
