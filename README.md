@@ -21,12 +21,12 @@ Features
 
 * *Example DMX client scripts.* This comes with example client scripts in the `controller` directory to help you get started with your idea.
 
-* *Cheap.* No longer do you need a Mac Mini and ENTTEC DMX interface to run your lighting installation. Now all you need is an $80 BeagleBone and a $5 circuit.
+* *Cheap.* No longer do you need a Mac Mini and ENTTEC DMX interface to run your lighting installation. Now all you need is an $80 (ahem now $45!) BeagleBone and a $5 circuit.
 
 How to run: Software
 --------------------
 
-1. Run `modprobe uio_pruss`
+1. Run `modprobe uio_pruss`. *Note that step #1 is only valid with older pre 3.8 kernels such as the original Beaglebone (white). Since kernel 3.8 (BeagleBone black shipping or any newer Angstrom image for example) you should enable it in the device tree layout instead of modprobe (/boot). One persistent method is explained in the Issues #2 thread. [Issue #2](http://github.com/boxysean/beaglebone-DMX/issues/2)
 2. Launch DMX server: `cd` into `bin` and run `./dmx`
 3. Launch DMX client: run a DMX client script, e.g., `cd contollers; python cycle.py`
 
@@ -34,12 +34,12 @@ How to run: Hardware
 --------------------
 
 1. [Make this circuit.](http://code.google.com/p/tinkerit/wiki/DmxSimpleBuilding)
-2. Connect pin 3 of the BeagleBone's P8 header to the input (pin 4) of the IC.
+2. Connect pin 12* of the BeagleBone's P8 header to the input (pin 4) of the IC. (*Note: this was recently changed to pin 12 from pin 3 to accomodate both the original Beaglebone and black variant. See dmx.c history for details.)
 3. Connect pins 5, 6, and 7 to ground, signal, and signal inversion respectively to target unit.
 
 ![image of DMX circuit](http://www.arduino.cc/playground/uploads/DMX/send_sn75276a.jpg)
 
-You can change the Bone's pin by editing the defined pin in `src/dmx.c` and recompiling.
+You can change the Bone's pin by editing the defined pin and local export/unexport in `src/dmx.c` and recompiling.
 
 DMX Server Protocol
 -------------------
@@ -73,4 +73,4 @@ BeagleBone rev A6 running both the DMX server and a DMX client written in python
 How it works
 ------------
 
-This library takes advantage of the BeagleBone's PRU (Programmable Realtime Unit). The DMX server passes the DMX values to the BeagleBone's PRU, which is constantly bit-banging the DMX protocol in realtime. ([Read more.](http://blog.boxysean.com/2012/08/12/first-steps-with-the-beaglebone-pru/)) The hardware circuit converts the bit-banged protocol into [RS-485](http://en.wikipedia.org/wiki/RS-485), which is what all standard DMX units expect.
+This library takes advantage of the BeagleBone's PRU (Programmable Realtime Unit). The DMX server passes the DMX values to the BeagleBone's PRU, which is constantly bit-banging the DMX protocol in realtime. ([Read more.](http://blog.boxysean.com/2012/08/12/first-steps-with-the-beaglebone-pru/)) The hardware circuit converts the bit-banged protocol into [RS-485](http://en.wikipedia.org/wiki/RS-485), which is what all standard DMX units expect. For help with the newer kernel 3.8 device tree, gpio names, pin #s and assignments this was a good resource [derek molloy boneDeviceTree docs](http://github.com/derekmolloy/boneDeviceTree/tree/master/docs).
