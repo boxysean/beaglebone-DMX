@@ -29,8 +29,9 @@
 
 #define PRU_NUM 	0
 
-// This pin is pin 3 on the P8 header
-#define DMX_PIN (6)
+// def dmx_pin 6 is physical pin 3 on the P8 header or gpio 38
+// def dmx_pin 12 is physical pin 12 on the P8 header or gpio 44
+#define DMX_PIN (12)
 #define DMX_CHANNELS (2)
 
 #define DMX_HALT_ADDR (0x100)
@@ -87,7 +88,9 @@ int main (void)
     /* Initialize the PRU */
     prussdrv_init ();		
 
-    LOCAL_export_pin(38);
+    /* physical pin 3 on the P8 header is gpio 38 */
+    /* physical pin 12 on the P8 header is gpio 44 */
+    LOCAL_export_pin(44);
     
     /* Open PRU Interrupt */
     ret = prussdrv_open(PRU_EVTOUT_0);
@@ -121,7 +124,8 @@ int main (void)
     prussdrv_pru_disable (PRU_NUM);
     prussdrv_exit ();
 
-    LOCAL_unexport_pin(38);
+    /* see comments above */
+    LOCAL_unexport_pin(44);
 
     return(0);
 
