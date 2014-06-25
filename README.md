@@ -27,6 +27,7 @@ How to run: Software
 --------------------
 
 1. Run `modprobe uio_pruss`
+2. On BeagleBone White run: `echo BB-BONE-PRU-01 > /sys/devices/bone_capemgr.8/slots` to enable the PRU
 2. Launch DMX server: `cd` into `bin` and run `./dmx`
 3. Launch DMX client: run a DMX client script, e.g., `cd contollers; python cycle.py`
 
